@@ -62,7 +62,7 @@ import kotlin.math.exp
 
 public class AddTaskActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
-    @SuppressLint("SimpleDateFormat")
+//    @SuppressLint("SimpleDateFormat")
     @Composable
     public fun TaskAdder(context: Context, navController: NavController?, modifier: Modifier) {
 
@@ -72,7 +72,7 @@ public class AddTaskActivity : ComponentActivity() {
         val formattedDate by remember {
             derivedStateOf {
                 DateTimeFormatter
-                    .ofPattern("MMM dd yyyy")
+                    .ofPattern("dd/MM/yyyy")
                     .format(datePicked)
             }
         }
@@ -304,7 +304,7 @@ public class AddTaskActivity : ComponentActivity() {
             if (taskType != "No Type") {
                 type = taskType
             }
-            file = file.append(fileCount, taskName, deadline, dlDate, dlTime, repeating, type, false)
+            file = file.append(fileCount, taskName, deadline, dlDate, dlTime, repeating, type, false, false)
 
             // printing the dataframe
             for (row in file) {

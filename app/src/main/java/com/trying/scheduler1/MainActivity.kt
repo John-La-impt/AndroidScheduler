@@ -57,7 +57,7 @@ import java.io.File
 import java.io.IOException
 import java.nio.file.Paths
 
-public class Task(var index: Int, var name: String, var deadline: Boolean, var dlDate: String, var dlTime: String, var repeat: Boolean, var type: String, var done: Boolean)
+public class Task(var index: Int, var name: String, var deadline: Boolean, var dlDate: String, var dlTime: String, var repeat: Boolean, var type: String, var done: Boolean, var overdue: Boolean)
 public class TaskType(var typeName: String, var typeTag: Int) // name is for the Text UI, tag is for special type (e.g.,
 class MainActivity : ComponentActivity() {
 

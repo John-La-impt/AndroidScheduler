@@ -51,6 +51,8 @@ import org.jetbrains.kotlinx.dataframe.io.readJson
 import org.jetbrains.kotlinx.dataframe.io.writeJson
 import java.io.File
 import java.io.IOException
+import java.time.format.DateTimeFormatter
+
 
 public class StartActivity : ComponentActivity() {
 
@@ -87,6 +89,7 @@ public class StartActivity : ComponentActivity() {
         typeArrayList.add(TaskType("No Repeating", 5)) // always add this 1 5th
         typeArrayList.add(TaskType("Done", 6))
         typeArrayList.add(TaskType("Not Done", 7))
+        typeArrayList.add(TaskType("Overdue", 8))
         // read from file
 //    typeArrayList.add("type 1")
 //    typeArrayList.add("type 2")
@@ -107,7 +110,8 @@ public class StartActivity : ComponentActivity() {
 //        taskArrayList.add(Task("Wake", "15-01-2026", "15:30", false))
 //    }
         if (context != null && initialRead) {
-            ReadTask(context, taskArrayList)
+//            ReadTask(context, taskArrayList)
+            CheckOverdue(context, taskArrayList)
             initialRead = false
             FilterTask(context, typeArrayList[0].typeTag, typeArrayList[0].typeName, taskArrayList)
 //            val iterator = taskArrayList.iterator()
@@ -118,6 +122,7 @@ public class StartActivity : ComponentActivity() {
 //                }
 //            }
         }
+
 
         // create a task array List copy that will be used to show the tasks
 //        var taskArrayListCopy = taskArrayList
@@ -233,7 +238,7 @@ public class StartActivity : ComponentActivity() {
             ) {
 //                var index = 0
                 items(taskArrayList) { task ->
-                    SampleTask(currentTypeText, taskArrayList, task, task.name, task.deadline, task.dlDate, task.dlTime, task.repeat, context)
+                    SampleTask(currentTypeText, taskArrayList, task, task.name, task.deadline, task.dlDate, task.dlTime, task.repeat, task.overdue, context)
 //                    index++
                 }
             }
@@ -250,6 +255,7 @@ public class StartActivity : ComponentActivity() {
         dlDate: String,
         dlTime: String,
         repeating: Boolean,
+        overdue: Boolean,
         context: Context?,
         modifier: Modifier = Modifier
     ) {
@@ -282,6 +288,11 @@ public class StartActivity : ComponentActivity() {
                         text = "Deadline time: $dlTime",
 //                fontSize = 20.sp
                     )
+                    if (overdue) {
+                        Text(
+                            text = "OVERDUE!"
+                        )
+                    }
                 } else {
                     Text(
                         text = "No deadline",
@@ -368,6 +379,7 @@ public class StartActivity : ComponentActivity() {
             var repeat: Boolean = false
             var taskType: String = ""
             var done: Boolean = false
+            var overdue: Boolean = false
 
             var preTaskName = ""
             var preDlDate = ""
@@ -382,7 +394,8 @@ public class StartActivity : ComponentActivity() {
                 repeat = row["repeat"] as Boolean
                 taskType = row["type"] as String
                 done = row["done"] as Boolean
-                taskArrayList.add(Task(taskIndex, taskName, deadline, dlDate, dlTime, repeat, taskType, done))
+                overdue = row["overdue"] as Boolean
+                taskArrayList.add(Task(taskIndex, taskName, deadline, dlDate, dlTime, repeat, taskType, done, overdue))
             }
 
             return true
@@ -422,12 +435,12 @@ public class StartActivity : ComponentActivity() {
         val iterator = taskArrayList.iterator()
 
         if (typeTag == 1) { // all tasks
-            while (iterator.hasNext()) {
-                val element = iterator.next()
-                if (element.done) {
-                    iterator.remove()
-                }
-            }
+//            while (iterator.hasNext()) {
+//                val element = iterator.next()
+//                if (element.done) {
+//                    iterator.remove()
+//                }
+//            }
         } else if (typeTag == 2) { // have deadline
             while (iterator.hasNext()) {
                 val element = iterator.next()
@@ -472,6 +485,13 @@ public class StartActivity : ComponentActivity() {
                     iterator.remove()
                 }
             }
+        } else if (typeTag == 8) {
+            while (iterator.hasNext()) {
+                val element = iterator.next()
+                if (!element.overdue) {
+                    iterator.remove()
+                }
+            }
         } else { // typeTag == 0
             // compare the typeString
             while (iterator.hasNext()) {
@@ -481,6 +501,33 @@ public class StartActivity : ComponentActivity() {
                 }
             }
 
+        }
+    }
+
+    fun CheckOverdue(context: Context?, taskArrayList: SnapshotStateList<Task>) {
+        taskArrayList.clear()
+        ReadTask(context, taskArrayList)
+        var changed = false
+        val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        for (task in taskArrayList) {
+            if (task.deadline && !task.overdue) { // if the task have deadline and is not overdue
+                // check the current time vs the task.dlDate
+                var dateGot = java.time.LocalDate.parse(task.dlDate, dateFormatter)
+                var currentDate = java.time.LocalDate.now()
+
+                var compare = currentDate.compareTo(dateGot)
+                if (compare > 0) { // current date is later than date got from task
+                    task.overdue = true
+                    changed = true
+                }
+            }
+        }
+
+        // write to the file
+        if (changed) {
+            var toWrite = taskArrayList.toDataFrame()
+            toWrite.print()
+            toWrite.writeJson(context?.filesDir.toString() + "/tasks.json")
         }
     }
 
