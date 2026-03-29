@@ -2,6 +2,7 @@ package com.trying.scheduler1
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -23,6 +25,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -101,6 +104,7 @@ public class StartActivity : ComponentActivity() {
         val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
         var expanded by remember { mutableStateOf(false) }
         var expanded2 by remember { mutableStateOf(false) }
+        var expanded3 by remember { mutableStateOf(false) }
 
         // find the tasks - create the lists
 //        val taskArrayList = ArrayList<Task>()
@@ -129,6 +133,8 @@ public class StartActivity : ComponentActivity() {
 //        var taskArrayListCopy = remember{ mutableStateListOf<Task>() }
 
         println("ran greeting!!!")
+
+        var newTypeText by remember { mutableStateOf("") }
 
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -176,6 +182,40 @@ public class StartActivity : ComponentActivity() {
                                         }
                                     )
                                 }
+                                DropdownMenuItem(
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                    text = { Text("Add new type") },
+                                    onClick = { // create a popup menu
+                                        expanded3 = !expanded3
+                                    }
+                                )
+                                Box(
+                                    modifier = Modifier
+                                        .padding(16.dp)
+                                ) {
+                                    DropdownMenu(
+                                        expanded = expanded3,
+                                        onDismissRequest = { expanded3 = false }
+                                    ) {
+                                        OutlinedTextField(
+                                            value = newTypeText,
+                                            onValueChange = { newTypeText = it },
+                                            label = { Text("Type name") }
+                                        )
+                                        Button(onClick = {
+//                                            CreateTask(taskNameValue, deadline, formattedDate, formattedTime, repeatCheck, chosenType, context)
+//                                            context.startActivity(Intent(context, MainActivity::class.java))
+                                            AddType(context, newTypeText)
+                                            newTypeText = ""
+                                            expanded3 = false
+                                            ReadType(context, typeArrayList)
+                                        }) {
+                                            Text(text = "Create Task Type")
+                                        }
+                                    }
+                                }
+//                                typesArrayList.add(TaskType("Add new type", -1))
                             }
                         }
 
@@ -416,10 +456,23 @@ public class StartActivity : ComponentActivity() {
 //                lineProgress++
             }
 
+
             for (type in typesArrayList) {
                 println("typeL " + type.typeName + " " + type.typeTag)
             }
 
+            return true
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return false
+        }
+    }
+
+    public fun AddType(context: Context?, typeName: String) : Boolean {
+        try {
+            var addType = '\n' + typeName
+            val file = File(context?.filesDir, "types.txt")
+            file.appendText(addType)
             return true
         } catch (e: IOException) {
             e.printStackTrace()
@@ -500,7 +553,6 @@ public class StartActivity : ComponentActivity() {
                     iterator.remove()
                 }
             }
-
         }
     }
 
