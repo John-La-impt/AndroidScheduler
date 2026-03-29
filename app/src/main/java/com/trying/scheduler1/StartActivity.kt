@@ -82,14 +82,14 @@ public class StartActivity : ComponentActivity() {
 
         var typeArrayList = ArrayList<TaskType>()
         // task types should be added to a txt file
-        typeArrayList.add(TaskType("All tasks", 1)) // always add this 1 first
+        typeArrayList.add(TaskType("Not Done", 7))
+        typeArrayList.add(TaskType("Overdue", 8))
         typeArrayList.add(TaskType("Deadline", 2)) // always add this 1 2nd
         typeArrayList.add(TaskType("No Deadline", 3)) // always add this 1 3rd
         typeArrayList.add(TaskType("Repeating", 4)) // always add this 1 4th
         typeArrayList.add(TaskType("No Repeating", 5)) // always add this 1 5th
         typeArrayList.add(TaskType("Done", 6))
-        typeArrayList.add(TaskType("Not Done", 7))
-        typeArrayList.add(TaskType("Overdue", 8))
+        typeArrayList.add(TaskType("All tasks", 1)) // always add this 1 first
         // read from file
 //    typeArrayList.add("type 1")
 //    typeArrayList.add("type 2")
@@ -181,14 +181,14 @@ public class StartActivity : ComponentActivity() {
 
                     },
 
-                    navigationIcon = {
-                        IconButton(onClick = { /* do something */ }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Localized description"
-                            )
-                        }
-                    },
+//                    navigationIcon = {
+//                        IconButton(onClick = { /* do something */ }) {
+//                            Icon(
+//                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+//                                contentDescription = "Localized description"
+//                            )
+//                        }
+//                    },
                     actions = {
 //                    IconButton(onClick = { onClick() }) {
 //                        Icon(

@@ -241,7 +241,7 @@ public class AddTaskActivity : ComponentActivity() {
 
             Button(onClick = {
                 CreateTask(taskNameValue, deadline, formattedDate, formattedTime, repeatCheck, chosenType, context)
-                navController?.navigate(Screen.addTaskScreen.route)
+                context.startActivity(Intent(context, MainActivity::class.java))
             }) {
                 Text(text = "Create Task")
             }
@@ -313,30 +313,6 @@ public class AddTaskActivity : ComponentActivity() {
 
             // write to file
             file.writeJson(context.filesDir.toString() + "/tasks.json")
-
-
-//            Log.d("check", "worked")
-//            val file = File(context.filesDir, "tasks.json")
-//
-//            val toAdd: String = "\n{\n" +
-//                    "   name: " + "\"" + taskName + "\"" + ",\n" +
-//                    "   dlDate: " + "\"" + dlDate + "\"" + ",\n" +
-//                    "   dlTime: " + "\"" + dlTime + "\"" + ",\n" +
-//                    "   repeat: " + repeating + ",\n" +
-//                    "}"
-//
-//            if (file.exists()) {
-//                file.appendText(toAdd)
-//            } else {
-//                if (file.createNewFile()) {
-//                    file.writeText(toAdd)
-//
-//                } else {
-//                    println("Create task failed")
-//                    return false
-//                }
-//            }
-//            context.startActivity(Intent(context, MainActivity::class.java))
             return true
         } catch (e: IOException) {
             e.printStackTrace()
